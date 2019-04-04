@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">RetrofitIntegration</string>
+    <string name="get">Get</string>
+    <string name="post">Post</string>
+    <string name="put">Put</string>
+    <string name="patch">Patch</string>
+    <string name="delete">Delete</string>
+</resources>

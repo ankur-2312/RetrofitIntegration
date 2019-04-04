@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/_50dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/butGet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:text="@string/get"/>
+    <Button
+        android:id="@+id/butPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:layout_marginTop="@dimen/_10dp"
+        android:text="@string/post"/>
+    <Button
+        android:id="@+id/butPut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:layout_marginTop="@dimen/_10dp"
+        android:text="@string/put"/>
+    <Button
+        android:id="@+id/butPatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:layout_marginTop="@dimen/_10dp"
+        android:text="@string/patch"/>
+    <Button
+        android:id="@+id/butDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:layout_marginTop="@dimen/_10dp"
+        android:text="@string/delete"/>
+
+</LinearLayout>
