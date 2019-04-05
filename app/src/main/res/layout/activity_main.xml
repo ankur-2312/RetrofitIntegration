@@ -1,47 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="@dimen/_50dp"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/butGet"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded"
-        android:text="@string/get"/>
-    <Button
-        android:id="@+id/butPost"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded"
-        android:layout_marginTop="@dimen/_10dp"
-        android:text="@string/post"/>
-    <Button
-        android:id="@+id/butPut"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded"
-        android:layout_marginTop="@dimen/_10dp"
-        android:text="@string/put"/>
-    <Button
-        android:id="@+id/butPatch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded"
-        android:layout_marginTop="@dimen/_10dp"
-        android:text="@string/patch"/>
-    <Button
-        android:id="@+id/butDelete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded"
-        android:layout_marginTop="@dimen/_10dp"
-        android:text="@string/delete"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll1" />
 
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/ll2"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/butGet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@drawable/rounded"
+            android:text="@string/get"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/butPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@drawable/rounded"
+            android:text="@string/post"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/butPut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded"
+            android:text="@string/put"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_10dp"
+        android:layout_marginBottom="@dimen/_10dp">
+
+        <Button
+            android:id="@+id/butPatch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@drawable/rounded"
+            android:text="@string/patch"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/butDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:background="@drawable/rounded"
+            android:text="@string/delete"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+
+</RelativeLayout>

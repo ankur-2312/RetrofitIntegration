@@ -3,14 +3,14 @@ package com.retrofitintegration;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class example {
+class PoJo {
 
     @SerializedName("userId")
     @Expose
     private int userId;
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private int id;
     @SerializedName("title")
     @Expose
     private String title;
@@ -18,35 +18,35 @@ public class example {
     @Expose
     private String body;
 
-    public int getUserId() {
+    int getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public Integer getId() {
+    int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    void setId(int id) {
         this.id = id;
     }
 
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    void setTitle(String title) {
         this.title = title;
     }
 
-    public String getBody() {
+    String getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    void setBody(String body) {
         this.body = body;
     }
 

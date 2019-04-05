@@ -2,27 +2,28 @@ package com.retrofitintegration;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static String Tag = "my";
+    private RecyclerViewDataAdapter adapter;
+    private ArrayList<PoJo> poJoArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +38,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button butPut = findViewById(R.id.butPut);
         Button butPatch = findViewById(R.id.butPatch);
         Button butDelete = findViewById(R.id.butDelete);
+        RecyclerView rv = findViewById(R.id.recyclerView);
         butGet.setOnClickListener(this);
         butPost.setOnClickListener(this);
         butPut.setOnClickListener(this);
         butPatch.setOnClickListener(this);
         butDelete.setOnClickListener(this);
+        poJoArrayList = new ArrayList<>();
+        adapter = new RecyclerViewDataAdapter(poJoArrayList);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(adapter);
+        PagerSnapHelper pagerSnapHelper=new PagerSnapHelper();
+        pagerSnapHelper.attachToRecyclerView(rv);
     }
 
 
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.butDelete:
+                deleteData();
                 break;
         }
 
@@ -72,69 +81,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getData() {
-        Call<List<example>> call = ApiInstance.getInstance().getApiInstance().getData();
-        call.enqueue(new Callback<List<example>>() {
+        Call<List<PoJo>> call = ApiInstance.getInstance().getApiInstance().getData();
+        call.enqueue(new Callback<List<PoJo>>() {
             @Override
-            public void onResponse(Call<List<example>> call, Response<List<example>> response) {
+            public void onResponse(Call<List<PoJo>> call, Response<List<PoJo>> response) {
 
-                Log.i("my", "hello");
-                Log.i("my", "hello" + response.body().size());
+                Log.i(Tag, "Get Response Successful  "+response.code());
+                assert response.body() != null;
+                poJoArrayList.clear();
+                poJoArrayList.addAll(response.body());
+                adapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onFailure(Call<List<example>> call, Throwable t) {
+            public void onFailure(Call<List<PoJo>> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("my", "" + t.getMessage());
+                Log.i(Tag, "" + t.getMessage());
             }
         });
     }
 
     private void postData() {
 
-        example ex = new example();
-        ex.setBody("sadsad");
-        ex.setTitle("qwerrrr");
+        PoJo ex = new PoJo();
+        ex.setBody("Title");
+        ex.setTitle("Body");
         ex.setUserId(123);
-        Call<example> call1 = ApiInstance.getInstance().getApiInstance().sendData(ex);
+        Call<PoJo> call = ApiInstance.getInstance().getApiInstance().postData(ex);
 
-        call1.enqueue(new Callback<example>() {
+        call.enqueue(new Callback<PoJo>() {
             @Override
-            public void onResponse(Call<example> call, Response<example> response) {
+            public void onResponse(Call<PoJo> call, Response<PoJo> response) {
 
-                Log.i("my", "hi");
-                Log.i("my", "hi" + response.body().getUserId());
-                Log.i("my", "hi" + response.body().getId());
-                Log.i("my", "hi" + response.body().getBody());
-                Log.i("my", "hi" + response.body().getTitle());
+                Log.i(Tag, "Post Response Successful "+response.code());
+                assert response.body() != null;
+                poJoArrayList.clear();
+                poJoArrayList.add(response.body());
+                adapter.notifyDataSetChanged();
+
+
             }
 
             @Override
-            public void onFailure(Call<example> call, Throwable t) {
+            public void onFailure(Call<PoJo> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("my", "" + t.getMessage());
+                Log.i(Tag, "" + t.getMessage());
             }
         });
     }
 
     private void putData() {
 
-        Call<example> call1 = ApiInstance.getInstance().getApiInstance().updateData(34, "hello");
+        Call<PoJo> call = ApiInstance.getInstance().getApiInstance().putData(34, "title");
 
-        call1.enqueue(new Callback<example>() {
+        call.enqueue(new Callback<PoJo>() {
             @Override
-            public void onResponse(Call<example> call, Response<example> response) {
+            public void onResponse(Call<PoJo> call, Response<PoJo> response) {
 
-                Log.i("my", "hi");
-                Log.i("my", "hi" + response.body().getUserId());
-                Log.i("my", "hi" + response.body().getId());
-                Log.i("my", "hi" + response.body().getBody());
-                Log.i("my", "hi" + response.body().getTitle());
+                Log.i(Tag, "Put Response Successful  "+response.code());
+                if(response.body() != null) {
+                    poJoArrayList.clear();
+                    poJoArrayList.add(response.body());
+                    adapter.notifyDataSetChanged();
+                }
+
             }
 
             @Override
-            public void onFailure(Call<example> call, Throwable t) {
+            public void onFailure(Call<PoJo> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("my", "" + t.getMessage());
+                Log.i(Tag, "" + t.getMessage());
             }
         });
     }
@@ -142,23 +158,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void patchData() {
 
-        Call<example> call1 = ApiInstance.getInstance().getApiInstance().patchData("title");
+        Call<PoJo> call = ApiInstance.getInstance().getApiInstance().patchData("title");
 
-        call1.enqueue(new Callback<example>() {
+        call.enqueue(new Callback<PoJo>() {
             @Override
-            public void onResponse(Call<example> call, Response<example> response) {
+            public void onResponse(Call<PoJo> call, Response<PoJo> response) {
 
-                Log.i("my", "hi");
-                Log.i("my", "hi" + response.body().getUserId());
-                Log.i("my", "hi" + response.body().getId());
-                Log.i("my", "hi" + response.body().getBody());
-                Log.i("my", "hi" + response.body().getTitle());
+                Log.i(Tag, "Patch Response Successful  "+response.code());
+                assert response.body() != null;
+                poJoArrayList.clear();
+                poJoArrayList.add(response.body());
+                adapter.notifyDataSetChanged();
+
             }
 
             @Override
-            public void onFailure(Call<example> call, Throwable t) {
+            public void onFailure(Call<PoJo> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("my", "" + t.getMessage());
+                Log.i(Tag, "" + t.getMessage());
+            }
+        });
+    }
+
+    private void deleteData() {
+
+        Call<ResponseBody> call = ApiInstance.getInstance().getApiInstance().deleteData(2);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                Log.i(Tag, "Delete Response Successful  "+response.code());
+                poJoArrayList.clear();
+                adapter.notifyDataSetChanged();
+                Toast.makeText(MainActivity.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.i(Tag, "" + t.getMessage());
             }
         });
     }
