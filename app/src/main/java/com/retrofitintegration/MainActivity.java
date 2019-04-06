@@ -1,5 +1,6 @@
 package com.retrofitintegration;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,12 +39,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button butPut = findViewById(R.id.butPut);
         Button butPatch = findViewById(R.id.butPatch);
         Button butDelete = findViewById(R.id.butDelete);
+        Button butMultiPart=findViewById(R.id.butMultiPart);
         RecyclerView rv = findViewById(R.id.recyclerView);
         butGet.setOnClickListener(this);
         butPost.setOnClickListener(this);
         butPut.setOnClickListener(this);
         butPatch.setOnClickListener(this);
         butDelete.setOnClickListener(this);
+        butMultiPart.setOnClickListener(this);
         poJoArrayList = new ArrayList<>();
         adapter = new RecyclerViewDataAdapter(poJoArrayList);
         rv.setLayoutManager(new LinearLayoutManager(this));
@@ -74,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.butDelete:
                 deleteData();
+                break;
+
+            case R.id.butMultiPart:
+                startActivity(new Intent(MainActivity.this,MultiPartActivity.class));
                 break;
         }
 
