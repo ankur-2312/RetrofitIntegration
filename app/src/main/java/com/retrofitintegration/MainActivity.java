@@ -1,6 +1,9 @@
 package com.retrofitintegration;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,16 +18,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static String Tag = "my";
     private RecyclerViewDataAdapter adapter;
     private ArrayList<PoJo> poJoArrayList;
+    private int cacheSize = 10 * 1024 * 1024;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rv.setAdapter(adapter);
         PagerSnapHelper pagerSnapHelper=new PagerSnapHelper();
         pagerSnapHelper.attachToRecyclerView(rv);
+        Cache cache = new Cache(getCacheDir(), cacheSize);
     }
 
 
@@ -87,17 +98,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+
+
     private void getData() {
-        Call<List<PoJo>> call = ApiInstance.getInstance().getApiInstance().getData();
+
+         Interceptor onlineInterceptor = new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                okhttp3.Response response = chain.proceed(chain.request());
+                int maxAge = 60; // read from cache for 60 seconds even if there is internet connection
+                return response.newBuilder()
+                        .header("Cache-Control", "public, max-age=" + maxAge)
+                        .removeHeader("Pragma")
+                        .build();
+            }
+        };
+
+         Interceptor offlineInterceptor= new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                if (!isNetworkAvailable()) {
+                    int maxStale = 60 * 60 * 24 * 30; // Offline cache available for 30 days
+                    request = request.newBuilder()
+                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                            .removeHeader("Pragma")
+                            .build();
+                }
+                return chain.proceed(request);
+            }
+        };
+
+        Cache cache = new Cache(getCacheDir(), cacheSize);
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(offlineInterceptor)
+                .addNetworkInterceptor(onlineInterceptor)
+                .cache(cache)
+                .build();
+
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create());
+
+        Retrofit retrofit = builder.build();
+        Api api = retrofit.create(Api.class);
+        Call<List<PoJo>> call = api.getData();
         call.enqueue(new Callback<List<PoJo>>() {
             @Override
             public void onResponse(Call<List<PoJo>> call, Response<List<PoJo>> response) {
 
                 Log.i(Tag, "Get Response Successful  "+response.code());
-                assert response.body() != null;
-                poJoArrayList.clear();
-                poJoArrayList.addAll(response.body());
-                adapter.notifyDataSetChanged();
+
+
+                if (response.raw().cacheResponse() != null) {
+                    Log.i(Tag, "Get Response Successful cache  "+response.raw().cacheResponse());
+                    // true: response was served from cache
+                }
+
+                if (response.raw().networkResponse() != null) {
+                    Log.i(Tag, "Get Response Successful network "+response.raw().networkResponse());
+                    // true: response was served from network/server
+                }
+
+                if(response.body()!=null) {
+                    // assert response.body() != null;
+                    poJoArrayList.clear();
+                    poJoArrayList.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -146,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onResponse(Call<PoJo> call, Response<PoJo> response) {
 
                 Log.i(Tag, "Put Response Successful  "+response.code());
+
                 if(response.body() != null) {
                     poJoArrayList.clear();
                     poJoArrayList.add(response.body());
@@ -207,5 +278,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(Tag, "" + t.getMessage());
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
