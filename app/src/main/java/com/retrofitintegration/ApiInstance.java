@@ -7,7 +7,7 @@ class ApiInstance {
 
     private static ApiInstance instance;
     private Api api;
-    private Api api1;
+    private Api api1,api2;
 
     private ApiInstance() {
 
@@ -24,6 +24,13 @@ class ApiInstance {
                 .build();
 
         api1 = retrofit1.create(Api.class);
+
+        Retrofit retrofi2 = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL_1)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api2 = retrofit1.create(Api.class);
 
     }
 
@@ -43,4 +50,6 @@ class ApiInstance {
     Api getApiInstance1() {
         return api1;
     }
+
+
 }

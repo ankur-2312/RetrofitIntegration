@@ -105,8 +105,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          Interceptor onlineInterceptor = new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
+                Log.i(Tag,"online");
                 okhttp3.Response response = chain.proceed(chain.request());
-                int maxAge = 60; // read from cache for 60 seconds even if there is internet connection
+                int maxAge = 5; // read from cache for 60 seconds even if there is internet connection
                 return response.newBuilder()
                         .header("Cache-Control", "public, max-age=" + maxAge)
                         .removeHeader("Pragma")
@@ -117,8 +118,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          Interceptor offlineInterceptor= new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
+                Log.i(Tag,"offline");
                 Request request = chain.request();
                 if (!isNetworkAvailable()) {
+                    Log.i(Tag,"offline inside");
                     int maxStale = 60 * 60 * 24 * 30; // Offline cache available for 30 days
                     request = request.newBuilder()
                             .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
@@ -162,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // true: response was served from network/server
                 }
 
-                if(response.body()!=null) {
+                if(response.body()!=null&&response.isSuccessful()) {
                     // assert response.body() != null;
                     poJoArrayList.clear();
                     poJoArrayList.addAll(response.body());
